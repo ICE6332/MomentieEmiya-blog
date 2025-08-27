@@ -1,7 +1,7 @@
 "use client";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 gsap.registerPlugin(useGSAP);
 
@@ -9,9 +9,18 @@ export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
+  const [isClient, setIsClient] = useState(false);
+
+  // Ensure we're on the client side before running animations
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   useGSAP(
     () => {
+      // Only run animations on client side after hydration
+      if (!isClient) return;
+      
       const container = containerRef.current;
       const svg = svgRef.current;
       if (!container || !svg) return;
@@ -71,7 +80,7 @@ export default function Home() {
 
       timelineRef.current = masterTimeline;
     },
-    { scope: containerRef },
+    { scope: containerRef, dependencies: [isClient] },
   );
 
   return (

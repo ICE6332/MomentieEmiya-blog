@@ -23,7 +23,8 @@ const waterfallFont = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "MomentieEmiya",
+  title: "Momentie" +
+      "Emiya",
   description: "A minimalist blog by MomentieEmiya",
 };
 
