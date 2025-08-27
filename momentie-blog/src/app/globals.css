@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@theme {
+  --color-momentie-bg: #f0eee6;
+  --color-momentie-text: #000000;
+  --font-waterfall: var(--font-waterfall);
+}
+
+:root {
+  --background: var(--color-momentie-bg);
+  --foreground: var(--color-momentie-text);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
