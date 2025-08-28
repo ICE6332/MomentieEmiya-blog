@@ -27,7 +27,7 @@ export function useIntroAnimation({
   }, []);
 
   useGSAP(
-    () => {
+    (ctx) => {
       // Only run animations on client side after hydration
       if (!isClient) return;
 
@@ -240,6 +240,10 @@ export function useIntroAnimation({
       }
 
       timelineRef.current = masterTimeline;
+      return () => {
+        ctx.revert();
+        timelineRef.current = null;
+      };
     },
     { scope: containerRef, dependencies: [isClient] },
   );
