@@ -100,7 +100,9 @@ export function useIntroAnimation({
           y: 0, // Reset y transform
           ease: "power4.out", // Fast start, elegant slow stop
           onComplete: () => {
-            console.log("Animation complete - SVG positioned at top");
+            if (process.env.NODE_ENV === "development") {
+              console.log("Animation complete - SVG positioned at top");
+            }
           },
         },
         "+=0.3", // Small delay after the last fill animation
