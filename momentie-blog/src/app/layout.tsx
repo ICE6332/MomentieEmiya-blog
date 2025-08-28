@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, IBM_Plex_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
+import { cn } from "@/lib/utils";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,8 +39,16 @@ const alexBrushFont = localFont({
   display: "swap",
 });
 
+const fontVariables = [
+  geistSans.variable,
+  geistMono.variable,
+  waterfallFont.variable,
+  ibmPlexMono.variable,
+  alexBrushFont.variable,
+];
+
 export const metadata: Metadata = {
-  title: "Momentie" + "Emiya",
+  title: "MomentieEmiya",
   description: "A minimalist blog by MomentieEmiya",
 };
 
@@ -49,10 +58,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${waterfallFont.variable} ${ibmPlexMono.variable} ${alexBrushFont.variable}`}
-    >
+    <html lang="en" className={cn(...fontVariables)}>
       <body className="antialiased">{children}</body>
     </html>
   );
