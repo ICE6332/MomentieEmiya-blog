@@ -14,7 +14,7 @@ export const WelcomeMessage = forwardRef<HTMLDivElement, WelcomeMessageProps>(
         <div
           className="flex flex-col h-[140px] justify-center leading-[0] relative shrink-0 text-center w-full"
           style={{
-            fontFamily: "'IBM Plex Mono', monospace",
+            fontFamily: "var(--font-ibm-plex-mono, monospace)",
             fontStyle: "italic",
             fontSize: "48px",
             fontWeight: 400,
