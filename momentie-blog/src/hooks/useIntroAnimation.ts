@@ -50,8 +50,8 @@ export function useIntroAnimation({
       );
 
       // Initialize all paths to invisible state
-      const paths = svg.querySelectorAll("path");
-      paths.forEach((path: SVGPathElement) => {
+      const paths = svg.querySelectorAll<SVGPathElement>("path");
+      paths.forEach((path) => {
         const pathLength = path.getTotalLength();
         gsap.set(path, {
           strokeDasharray: pathLength,
@@ -63,7 +63,7 @@ export function useIntroAnimation({
       // Create and start the complete animation sequence
       const masterTimeline = gsap.timeline({ delay: 1 });
 
-      paths.forEach((path: SVGPathElement, index: number) => {
+      paths.forEach((path, index) => {
         // Phase 1: Stroke animation (drawing the letter outline)
         masterTimeline.to(
           path,
