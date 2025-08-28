@@ -4,10 +4,10 @@ import gsap from "gsap";
 import { type RefObject, useEffect, useRef, useState } from "react";
 
 interface UseIntroAnimationProps {
-  containerRef: RefObject<HTMLDivElement>;
-  svgRef: RefObject<SVGSVGElement>;
-  welcomeRef: RefObject<HTMLDivElement>;
-  yumiRef: RefObject<HTMLDivElement>;
+  containerRef: RefObject<HTMLDivElement | null>;
+  svgRef: RefObject<SVGSVGElement | null>;
+  welcomeRef: RefObject<HTMLDivElement | null>;
+  yumiRef: RefObject<HTMLDivElement | null>;
 }
 
 export function useIntroAnimation({
