@@ -5,9 +5,9 @@ import { forwardRef } from "react";
 export const YumiIllustration = forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
->(({ className = "" }, ref) => {
+>(({ className = "", ...props }, ref) => {
   return (
-    <div ref={ref} className={`${className}`}>
+    <div ref={ref} className={className} {...props}>
       <Image
         src="/Yumi_web_3.png"
         alt="Yumi Illustration"
