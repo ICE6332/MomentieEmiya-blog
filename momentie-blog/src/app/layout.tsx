@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, IBM_Plex_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 
@@ -13,10 +13,26 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const ibmPlexMono = IBM_Plex_Mono({
+  variable: "--font-ibm-plex-mono",
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
+  subsets: ["latin"],
+});
+
 // 加载本地 Waterfall 字体
 const waterfallFont = localFont({
   src: "./fonts/Waterfall-Regular.ttf",
   variable: "--font-waterfall",
+  weight: "400",
+  style: "normal",
+  display: "swap",
+});
+
+// 加载本地 Alex Brush 字体
+const alexBrushFont = localFont({
+  src: "./fonts/AlexBrush-Regular.ttf",
+  variable: "--font-alex-brush",
   weight: "400",
   style: "normal",
   display: "swap",
@@ -36,7 +52,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${waterfallFont.variable}`}
+      className={`${geistSans.variable} ${geistMono.variable} ${waterfallFont.variable} ${ibmPlexMono.variable} ${alexBrushFont.variable}`}
     >
       <body className="antialiased">{children}</body>
     </html>

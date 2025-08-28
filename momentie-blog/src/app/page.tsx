@@ -8,6 +8,8 @@ gsap.registerPlugin(useGSAP);
 export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
+  const welcomeRef = useRef<HTMLDivElement>(null);
+  const yumiRef = useRef<HTMLDivElement>(null);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
   const [isClient, setIsClient] = useState(false);
 
@@ -78,6 +80,141 @@ export default function Home() {
         );
       });
 
+      // Phase 3: Transition to Figma layout
+      // After all letters are drawn and filled, move the entire SVG to final position
+      masterTimeline.to(
+        svg,
+        {
+          duration: 1.2, // Total duration of transition
+          scale: 0.6, // Scale down to match Figma design
+          top: "60px", // Fixed position at top
+          left: "50%", // Keep centered
+          transform: "translateX(-50%)", // Center horizontally
+          y: 0, // Reset y transform
+          position: "absolute",
+          ease: "power4.out", // Fast start, elegant slow stop
+          onComplete: () => {
+            console.log("Animation complete - SVG positioned according to Figma design");
+          }
+        },
+        "+=0.3" // Small delay after the last fill animation
+      );
+
+      // Remove bounce animation for cleaner transition
+
+      // Phase 4: Typewriter effect for "Welcome to my Channel"
+      const welcomeText = welcomeRef.current;
+      if (welcomeText) {
+        // Initially hide and position the welcome text (centered below MomentieEmiya)
+        gsap.set(welcomeText, {
+          opacity: 0,
+          position: "absolute",
+          top: "160px", // Fixed position below MomentieEmiya
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "100%",
+          height: "140px" // Match Figma design height
+        });
+
+        // Fade in the container
+        masterTimeline.to(
+          welcomeText,
+          {
+            opacity: 1,
+            duration: 0.5,
+            ease: "power2.out"
+          },
+          "+=0.3" // Delayed start - after SVG animation completes
+        );
+
+        // Typewriter effect using GSAP's text plugin
+        const text = "Welcome to my Channel";
+        const chars = text.split("");
+        
+        // Create spans for each character inside the nested p tag
+        const pElement = welcomeText.querySelector('div p');
+        if (pElement) {
+          pElement.innerHTML = chars.map(char => 
+            `<span class="inline-block opacity-0">${char === " " ? "&nbsp;" : char}</span>`
+          ).join("");
+          
+          const charElements = pElement.querySelectorAll("span");
+          
+          // Animate each character appearing
+          masterTimeline.to(
+            charElements,
+            {
+              opacity: 1,
+              duration: 0.05,
+              stagger: {
+                each: 0.05,
+                from: "center", // Start from center and expand outwards
+                ease: "none"
+              },
+              ease: "none"
+            },
+            "+=0.2" // Small delay after container appears
+          );
+        }
+      }
+
+      // Phase 5: Water-ink fade-in effect for "Yumi"
+      const yumiText = yumiRef.current;
+      if (yumiText) {
+        // Initially hide and position the Yumi text
+        gsap.set(yumiText, {
+          opacity: 0,
+          position: "absolute",
+          top: "70%", // Position at bottom area
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "100%",
+          height: "265px" // Match Figma design height
+        });
+
+        // Fade in the container first
+        masterTimeline.to(
+          yumiText,
+          {
+            opacity: 1,
+            duration: 0.5,
+            ease: "power2.out"
+          },
+          "+=0.5" // Start after Welcome animation completes
+        );
+
+        // Water-ink effect using GSAP's text plugin
+        const yumiTextContent = "Yumi";
+        const yumiChars = yumiTextContent.split("");
+        
+        // Create spans for each character inside the nested p tag
+        const yumiPElement = yumiText.querySelector('div p');
+        if (yumiPElement) {
+          yumiPElement.innerHTML = yumiChars.map(char => 
+            `<span class="inline-block opacity-0" style="filter: blur(10px);">${char}</span>`
+          ).join("");
+          
+          const yumiCharElements = yumiPElement.querySelectorAll("span");
+          
+          // Water-ink fade-in animation from center outwards
+          masterTimeline.to(
+            yumiCharElements,
+            {
+              opacity: 1,
+              filter: "blur(0px)",
+              duration: 0.8,
+              stagger: {
+                each: 0.15,
+                from: "center", // Start from center and expand outwards
+                ease: "power2.out"
+              },
+              ease: "power2.out"
+            },
+            "+=0.3" // Small delay after container appears
+          );
+        }
+      }
+
       timelineRef.current = masterTimeline;
     },
     { scope: containerRef, dependencies: [isClient] },
@@ -85,14 +222,15 @@ export default function Home() {
 
   return (
     <main className="bg-[--color-momentie-bg] min-h-screen flex flex-col items-center justify-center px-4">
-      <div className="text-center">
-        <div ref={containerRef} className="relative w-full max-w-2xl mx-auto">
+      <div className="text-center w-full">
+        <div ref={containerRef} className="relative w-full flex flex-col items-center justify-center" style={{ minHeight: "100vh" }}>
           <svg
             ref={svgRef}
             width="100%"
             height="auto"
             viewBox="0 0 398 82"
-            className="w-full h-auto"
+            className="w-full h-auto max-w-md"
+            style={{ position: "absolute" }}
             role="img"
             aria-label="MomentieEmiya handwritten text with animated path drawing effect"
           >
@@ -226,6 +364,39 @@ export default function Home() {
               strokeLinejoin="round"
             />
           </svg>
+          {/* Welcome to my Channel text */}
+          <div 
+            ref={welcomeRef}
+            className="flex flex-col h-[140px] items-center justify-start overflow-clip relative shrink-0 w-full"
+          >
+            <div 
+              className="flex flex-col h-[140px] justify-center leading-[0] relative shrink-0 text-center w-full"
+              style={{ 
+                fontFamily: "'IBM Plex Mono', monospace", 
+                fontStyle: "italic",
+                fontSize: "48px",
+                fontWeight: 400,
+                color: "black"
+              }}
+            >
+              <p className="leading-normal">Welcome to my Channel</p>
+            </div>
+          </div>
+          
+          {/* Yumi text */}
+          <div 
+            ref={yumiRef}
+            className="absolute flex flex-col h-[265px] justify-center leading-[0] text-center w-[1440px] translate-x-[-50%] translate-y-[50%]"
+            style={{
+              fontFamily: "var(--font-alex-brush)", 
+              fontSize: "512px",
+              color: "rgba(68,158,203,0.8)",
+              left: "calc(50% - 25px)",
+              bottom: "132.5px"
+            }}
+          >
+            <p className="leading-normal">Yumi</p>
+          </div>
         </div>
       </div>
     </main>

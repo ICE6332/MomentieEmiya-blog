@@ -27,16 +27,19 @@ The development server runs on http://localhost:3000 by default.
 ```
 src/app/          # App Router pages and layouts
 ├── layout.tsx    # Root layout with font configuration
-├── page.tsx      # Home page component
-└── globals.css   # Global styles and CSS variables
+├── page.tsx      # Home page component with GSAP animations
+├── globals.css   # Global styles and CSS variables
+└── fonts/        # Local font files (AlexBrush-Regular.ttf, Waterfall-Regular.ttf)
 public/           # Static assets (images, icons)
 ```
 
 ### Styling System
 - **Tailwind CSS v4** with PostCSS integration
 - **Custom CSS Variables**: Defined in `globals.css` for theming
-- **Color Scheme**: Custom brand colors (`--color-momentie-bg`, `--color-momentie-text`)
-- **Fonts**: Geist Sans, Geist Mono (Google Fonts), and Waterfall (local custom font)
+- **Color Scheme**: Custom brand colors (`--color-momentie-bg: #f0eee6`, `--color-momentie-text: #000000`)
+- **Fonts**: 
+  - Google Fonts: Geist Sans, Geist Mono, IBM Plex Mono
+  - Local Fonts: Waterfall-Regular.ttf, AlexBrush-Regular.ttf (in `src/app/fonts/`)
 - **Font Loading**: Optimized with `next/font` for performance
 
 ### Code Quality Tools
@@ -74,6 +77,7 @@ Key settings in `biome.json`:
 
 ### Animation Development
 - GSAP is configured with React hooks (`useGSAP`)
+- Client-side only animations with hydration check (`useEffect` with `isClient` state)
 - Path animations use `strokeDasharray` and `strokeDashoffset` for drawing effects
 - Animation timing configured with staggered delays for sequential effects
 
