@@ -39,8 +39,7 @@ const alexBrushFont = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Momentie" +
-      "Emiya",
+  title: "Momentie" + "Emiya",
   description: "A minimalist blog by MomentieEmiya",
 };
 

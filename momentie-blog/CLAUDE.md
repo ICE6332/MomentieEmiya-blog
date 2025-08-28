@@ -4,89 +4,81 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Development Commands
 
-### Core Development
-- `npm run dev` - Start development server (runs on http://localhost:3000)
-- `npm run build` - Build production app
+- `npm run dev` - Start development server (default: http://localhost:3000)
+- `npm run build` - Build production application
 - `npm start` - Start production server
 - `npm run lint` - Run Biome linter checks
-- `npm run format` - Format code with Biome
-
-### Development Server
-The development server runs on http://localhost:3000 by default.
+- `npm run format` - Auto-format code with Biome
 
 ## Project Architecture
 
-### Framework & Structure
-- **Next.js 15.5.2** with App Router architecture
-- **App Directory**: `src/app/` contains pages, layouts, and route handlers
-- **TypeScript**: Fully configured with strict mode enabled
-- **Path Aliases**: `@/*` maps to `./src/*` for cleaner imports
-- **Animation**: GSAP integration with React hooks for advanced animations
+### Component Architecture
+The application follows a modular component structure with separation of concerns:
 
-### Key Directories
+**Main Components** (`src/components/`)
+- `MomentieLogo.tsx` - SVG logo component with `forwardRef<SVGSVGElement>` for animation control
+- `WelcomeMessage.tsx` - Welcome text component with IBM Plex Mono font styling
+- `YumiSignature.tsx` - Artistic signature component using Alex Brush font
+
+**Custom Hooks** (`src/hooks/`)
+- `useIntroAnimation.ts` - Encapsulates all GSAP animation logic with timeline management
+  - Handles client-side hydration with `isClient` state
+  - Manages complex animation sequences: SVG path drawing, text typewriter effects, water-ink transitions
+  - Returns timeline reference for external control
+
+**Page Structure** (`src/app/`)
+- `page.tsx` - Main home page that composes components and uses animation hook
+- `layout.tsx` - Root layout with font configurations (Geist, IBM Plex Mono, Waterfall, Alex Brush)
+- `globals.css` - Global styles with CSS variables for theming
+
+### Animation System
+The application uses GSAP for complex animation sequences:
+1. **Phase 1**: SVG path stroke animation (letter outlines)
+2. **Phase 2**: Path fill transition (solid colors)
+3. **Phase 3**: Logo repositioning and scaling
+4. **Phase 4**: Typewriter effect for welcome message
+5. **Phase 5**: Water-ink fade effect for signature
+
+All animations are coordinated through a master timeline in `useIntroAnimation` hook with careful timing control.
+
+### Styling Configuration
+- **Tailwind CSS v4** with PostCSS
+- **Custom Properties**: `--color-momentie-bg: #f0eee6`, `--color-momentie-text: #000000`
+- **Font System**:
+  - Google Fonts: Geist Sans/Mono, IBM Plex Mono
+  - Local Fonts: Waterfall-Regular.ttf, AlexBrush-Regular.ttf
+- **CSS Variables**: Used for dynamic theming and font references
+
+### Code Quality
+- **Biome** for linting and formatting (NOT ESLint/Prettier)
+- **TypeScript** with strict mode and path aliases (`@/*` → `./src/*`)
+- **Import Organization**: Automatically sorted with type imports first
+- **Indentation**: 2 spaces enforced
+
+## Key Technical Patterns
+
+### ForwardRef Pattern
+All visual components use `forwardRef` to expose DOM refs for animation control:
+```typescript
+export const ComponentName = forwardRef<HTMLDivElement, Props>(
+  ({ className }, ref) => { /* ... */ }
+);
+ComponentName.displayName = "ComponentName";
 ```
-src/app/          # App Router pages and layouts
-├── layout.tsx    # Root layout with font configuration
-├── page.tsx      # Home page component with GSAP animations
-├── globals.css   # Global styles and CSS variables
-└── fonts/        # Local font files (AlexBrush-Regular.ttf, Waterfall-Regular.ttf)
-public/           # Static assets (images, icons)
+
+### Client-Side Animation Safety
+Animations check for client-side rendering before execution:
+```typescript
+const [isClient, setIsClient] = useState(false);
+useEffect(() => { setIsClient(true); }, []);
+useGSAP(() => {
+  if (!isClient) return;
+  // animation logic
+}, { dependencies: [isClient] });
 ```
 
-### Styling System
-- **Tailwind CSS v4** with PostCSS integration
-- **Custom CSS Variables**: Defined in `globals.css` for theming
-- **Color Scheme**: Custom brand colors (`--color-momentie-bg: #f0eee6`, `--color-momentie-text: #000000`)
-- **Fonts**: 
-  - Google Fonts: Geist Sans, Geist Mono, IBM Plex Mono
-  - Local Fonts: Waterfall-Regular.ttf, AlexBrush-Regular.ttf (in `src/app/fonts/`)
-- **Font Loading**: Optimized with `next/font` for performance
-
-### Code Quality Tools
-- **Biome** (NOT ESLint/Prettier) for linting and formatting
-- Configured with Next.js and React recommended rules
-- Import organization enabled
-- 2-space indentation enforced
-
-## Configuration Details
-
-### Build System
-- **Next.js default build system** (not using Turbopack)
-- Standard webpack-based builds for optimal compatibility
-- Production optimizations enabled by default
-
-### TypeScript Configuration
-- Strict mode enabled with ES2017 target
-- Next.js TypeScript plugin configured
-- Module resolution set to "bundler" for optimal compatibility
-
-### Biome Configuration
-Key settings in `biome.json`:
-- Git integration enabled with ignore file support
-- Custom ignore patterns for build directories
-- Next.js and React domain rules enabled
-- Unknown CSS at-rules disabled for Tailwind compatibility
-
-## Development Workflow
-
-### Starting Development
-1. Run `npm run dev` to start development server with hot reload
-2. Edit `src/app/page.tsx` to modify the home page
-3. Global styles are in `src/app/globals.css`
-4. Use `@/` prefix for imports from the src directory
-
-### Animation Development
-- GSAP is configured with React hooks (`useGSAP`)
-- Client-side only animations with hydration check (`useEffect` with `isClient` state)
-- Path animations use `strokeDasharray` and `strokeDashoffset` for drawing effects
-- Animation timing configured with staggered delays for sequential effects
-
-### Code Formatting
-- Code is automatically formatted using Biome
-- Run `npm run format` to format all files
-- Import organization happens automatically
-
-### Building for Production
-- `npm run build` creates optimized production build
-- `npm start` serves the production build locally
-- Static assets are served from the `public/` directory
+### GSAP Timeline Management
+Single master timeline coordinates all animation phases with precise timing:
+- Staggered letter animations with calculated delays
+- Phase transitions using timeline position parameters
+- Cleanup handled automatically by useGSAP hook
