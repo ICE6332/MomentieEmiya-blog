@@ -95,7 +95,7 @@ export function useIntroAnimation({
           scale: 0.6, // Scale down to match Figma design
           top: "60px", // Fixed position at top
           left: "50%", // Keep centered
-          transform: "translateX(-50%)", // Center horizontally
+          xPercent: -50, // Center horizontally
           y: 0, // Reset y transform
           position: "absolute",
           ease: "power4.out", // Fast start, elegant slow stop
@@ -117,7 +117,7 @@ export function useIntroAnimation({
           position: "absolute",
           top: "160px", // Fixed position below MomentieEmiya
           left: "50%",
-          transform: "translateX(-50%)",
+          xPercent: -50,
           width: "100%",
           height: "140px", // Match Figma design height
         });
@@ -176,7 +176,7 @@ export function useIntroAnimation({
           position: "absolute",
           top: "70%", // Position at bottom area
           left: "50%",
-          transform: "translateX(-50%)",
+          xPercent: -50,
           width: "100%",
           height: "265px", // Match Figma design height
         });
