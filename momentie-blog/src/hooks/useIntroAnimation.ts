@@ -234,6 +234,6 @@ export function useIntroAnimation({
 
   return {
     isClient,
-    timeline: timelineRef.current,
+    timelineRef,
   };
 }
