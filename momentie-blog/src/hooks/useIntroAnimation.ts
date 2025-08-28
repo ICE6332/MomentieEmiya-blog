@@ -100,9 +100,12 @@ export function useIntroAnimation({
           position: "absolute",
           ease: "power4.out", // Fast start, elegant slow stop
           onComplete: () => {
-            console.log(
-              "Animation complete - SVG positioned according to Figma design",
-            );
+            if (process.env.NODE_ENV !== "production") {
+              console.info(
+                "Intro animation complete - SVG positioned per design",
+              );
+            }
+            // Integrate monitoring or analytics here if needed
           },
         },
         "+=0.3", // Small delay after the last fill animation
