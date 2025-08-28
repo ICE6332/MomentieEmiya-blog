@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { MomentieLogo } from "@/components/MomentieLogo";
 import { WelcomeMessage } from "@/components/WelcomeMessage";
 import { YumiIllustration } from "@/components/YumiIllustration";
@@ -14,18 +14,13 @@ export default function Home() {
   const yumiIllustrationRef = useRef<HTMLDivElement>(null);
 
   // Use the custom animation hook
-  const { timelineRef } = useIntroAnimation({
+  useIntroAnimation({
     containerRef,
     svgRef,
     welcomeRef,
     yumiRef,
     yumiIllustrationRef,
   });
-
-  // Example external control
-  useEffect(() => {
-    timelineRef.current?.play();
-  }, [timelineRef]);
 
   return (
     <main className="bg-[--color-momentie-bg] min-h-screen relative">
