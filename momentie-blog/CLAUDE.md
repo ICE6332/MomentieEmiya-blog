@@ -5,10 +5,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Development Commands
 
 - `npm run dev` - Start development server (default: http://localhost:3000)
-- `npm run build` - Build production application
+- `npm run build` - Build production application (includes TypeScript type checking)
 - `npm start` - Start production server
 - `npm run lint` - Run Biome linter checks
 - `npm run format` - Auto-format code with Biome
+- `npx tsc --noEmit` - Run TypeScript type checking manually
 
 ## Project Architecture
 
@@ -19,6 +20,7 @@ The application follows a modular component structure with separation of concern
 - `MomentieLogo.tsx` - SVG logo component with `forwardRef<SVGSVGElement>` for animation control
 - `WelcomeMessage.tsx` - Welcome text component with IBM Plex Mono font styling
 - `YumiSignature.tsx` - Artistic signature component using Alex Brush font
+- `YumiIllustration.tsx` - Water-ink style illustration component (新增)
 
 **Custom Hooks** (`src/hooks/`)
 - `useIntroAnimation.ts` - Encapsulates all GSAP animation logic with timeline management
@@ -32,14 +34,20 @@ The application follows a modular component structure with separation of concern
 - `globals.css` - Global styles with CSS variables for theming
 
 ### Animation System
-The application uses GSAP for complex animation sequences:
-1. **Phase 1**: SVG path stroke animation (letter outlines)
-2. **Phase 2**: Path fill transition (solid colors)
-3. **Phase 3**: Logo repositioning and scaling
-4. **Phase 4**: Typewriter effect for welcome message
-5. **Phase 5**: Water-ink fade effect for signature
+The application uses GSAP for complex animation sequences with precise timeline control:
 
-All animations are coordinated through a master timeline in `useIntroAnimation` hook with careful timing control.
+**Animation Phases:**
+1. **Logo Drawing** (0-2s): SVG path stroke animation for letter outlines
+2. **Logo Filling** (2-3s): Path fill transition to solid colors
+3. **Logo Transform** (3-4s): Scale down and reposition to top-left corner
+4. **Welcome Text** (4-6s): Typewriter effect for welcome message with cursor blink
+5. **Signature Fade** (6-7s): Water-ink fade effect for Yumi signature
+6. **Illustration** (7-8s): Final illustration fade-in (if present)
+
+All animations are managed through a master GSAP timeline in `useIntroAnimation` hook with:
+- Staggered delays for natural flow
+- Easing functions for smooth transitions
+- Auto-cleanup on component unmount
 
 ### Styling Configuration
 - **Tailwind CSS v4** with PostCSS

@@ -4,10 +4,11 @@ import gsap from "gsap";
 import { type RefObject, useEffect, useRef, useState } from "react";
 
 interface UseIntroAnimationProps {
-  containerRef: RefObject<HTMLDivElement>;
-  svgRef: RefObject<SVGSVGElement>;
-  welcomeRef: RefObject<HTMLDivElement>;
-  yumiRef: RefObject<HTMLDivElement>;
+  containerRef: RefObject<HTMLDivElement | null>;
+  svgRef: RefObject<SVGSVGElement | null>;
+  welcomeRef: RefObject<HTMLDivElement | null>;
+  yumiRef: RefObject<HTMLDivElement | null>;
+  yumiIllustrationRef?: RefObject<HTMLDivElement | null>;
 }
 
 export function useIntroAnimation({
@@ -15,6 +16,7 @@ export function useIntroAnimation({
   svgRef,
   welcomeRef,
   yumiRef,
+  yumiIllustrationRef,
 }: UseIntroAnimationProps) {
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
   const [isClient, setIsClient] = useState(false);
@@ -86,23 +88,19 @@ export function useIntroAnimation({
         );
       });
 
-      // Phase 3: Transition to Figma layout
-      // After all letters are drawn and filled, move the entire SVG to final position
+      // Phase 3: Move MomentieEmiya from center to top
+      // After all letters are drawn and filled, move the entire SVG to top position
       masterTimeline.to(
         svg,
         {
           duration: 1.2, // Total duration of transition
-          scale: 0.6, // Scale down to match Figma design
-          top: "60px", // Fixed position at top
-          left: "50%", // Keep centered
-          transform: "translateX(-50%)", // Center horizontally
+          top: "75px", // Move to final position in top container (10px container + 65px to center in 140px height)
+          left: "50%", // Keep centered horizontally
+          transform: "translateX(-50%)", // Only center horizontally, remove vertical centering
           y: 0, // Reset y transform
-          position: "absolute",
           ease: "power4.out", // Fast start, elegant slow stop
           onComplete: () => {
-            console.log(
-              "Animation complete - SVG positioned according to Figma design",
-            );
+            console.log("Animation complete - SVG positioned at top");
           },
         },
         "+=0.3", // Small delay after the last fill animation
@@ -115,7 +113,7 @@ export function useIntroAnimation({
         gsap.set(welcomeText, {
           opacity: 0,
           position: "absolute",
-          top: "160px", // Fixed position below MomentieEmiya
+          top: "220px", // Position in second row of top container (10px + 140px + 70px to center)
           left: "50%",
           transform: "translateX(-50%)",
           width: "100%",
@@ -170,15 +168,9 @@ export function useIntroAnimation({
       // Phase 5: Water-ink fade-in effect for "Yumi"
       const yumiText = yumiRef.current;
       if (yumiText) {
-        // Initially hide and position the Yumi text
+        // Initially hide the Yumi text (let CSS handle positioning)
         gsap.set(yumiText, {
           opacity: 0,
-          position: "absolute",
-          top: "70%", // Position at bottom area
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: "100%",
-          height: "265px", // Match Figma design height
         });
 
         // Fade in the container first
@@ -225,6 +217,26 @@ export function useIntroAnimation({
             "+=0.3", // Small delay after container appears
           );
         }
+      }
+
+      // Phase 6: Yumi illustration fade-in animation (1 second fade-in)
+      const yumiIllustration = yumiIllustrationRef?.current;
+      if (yumiIllustration) {
+        // Set initial state
+        gsap.set(yumiIllustration, {
+          opacity: 0,
+        });
+
+        // Simple 1 second fade-in animation
+        masterTimeline.to(
+          yumiIllustration,
+          {
+            opacity: 1,
+            duration: 1,
+            ease: "power2.out",
+          },
+          "+=0.5", // Start after Yumi signature animation
+        );
       }
 
       timelineRef.current = masterTimeline;
