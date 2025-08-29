@@ -6,7 +6,6 @@ import { type RefObject, useEffect, useRef, useState } from "react";
 interface UseIntroAnimationProps {
   containerRef: RefObject<HTMLDivElement | null>;
   svgRef: RefObject<SVGSVGElement | null>;
-  welcomeRef: RefObject<HTMLDivElement | null>;
   yumiRef: RefObject<HTMLDivElement | null>;
   yumiIllustrationRef?: RefObject<HTMLDivElement | null>;
 }
@@ -14,7 +13,6 @@ interface UseIntroAnimationProps {
 export function useIntroAnimation({
   containerRef,
   svgRef,
-  welcomeRef,
   yumiRef,
   yumiIllustrationRef,
 }: UseIntroAnimationProps) {
@@ -89,12 +87,12 @@ export function useIntroAnimation({
       });
 
       // Phase 3: Move MomentieEmiya from center to top
-      // After all letters are drawn and filled, move the entire SVG to top position
+      // After all letters are drawn and filled, move the entire SVG to Frame 2 position
       masterTimeline.to(
         svg,
         {
           duration: 1.2, // Total duration of transition
-          top: "75px", // Move to final position in top container (10px container + 65px to center in 140px height)
+          top: "120px", // Move to center of Frame 2 (30px padding + 59px to center in 237px title area)
           left: "50%", // Keep centered horizontally
           transform: "translateX(-50%)", // Only center horizontally, remove vertical centering
           y: 0, // Reset y transform
@@ -106,136 +104,87 @@ export function useIntroAnimation({
         "+=0.3", // Small delay after the last fill animation
       );
 
-      // Phase 4: Typewriter effect for "Welcome to my Channel"
-      const welcomeText = welcomeRef.current;
-      if (welcomeText) {
-        // Initially hide and position the welcome text (centered below MomentieEmiya)
-        gsap.set(welcomeText, {
-          opacity: 0,
-          position: "absolute",
-          top: "220px", // Position in second row of top container (10px + 140px + 70px to center)
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: "100%",
-          height: "140px", // Match Figma design height
-        });
-
-        // Fade in the container
-        masterTimeline.to(
-          welcomeText,
-          {
-            opacity: 1,
-            duration: 0.5,
-            ease: "power2.out",
-          },
-          "+=0.3", // Delayed start - after SVG animation completes
-        );
-
-        // Typewriter effect using GSAP's text plugin
-        const text = "Welcome to my Channel";
-        const chars = text.split("");
-
-        // Create spans for each character inside the nested p tag
-        const pElement = welcomeText.querySelector("div p");
-        if (pElement) {
-          pElement.innerHTML = chars
-            .map(
-              (char) =>
-                `<span class="inline-block opacity-0">${char === " " ? "&nbsp;" : char}</span>`,
-            )
-            .join("");
-
-          const charElements = pElement.querySelectorAll("span");
-
-          // Animate each character appearing
-          masterTimeline.to(
-            charElements,
-            {
-              opacity: 1,
-              duration: 0.05,
-              stagger: {
-                each: 0.05,
-                from: "center", // Start from center and expand outwards
-                ease: "none",
-              },
-              ease: "none",
-            },
-            "+=0.2", // Small delay after container appears
-          );
-        }
-      }
-
-      // Phase 5: Water-ink fade-in effect for "Yumi"
+      // Phase 4: Simultaneous Yumi text and illustration animation (1 second total)
       const yumiText = yumiRef.current;
+      const yumiIllustration = yumiIllustrationRef?.current;
+      
+      // Start both animations at the same time with same delay
+      const simultaneousStart = "+=0.3"; // Start after Logo animation completes
+
+      // Yumi text water-ink effect
       if (yumiText) {
-        // Initially hide the Yumi text (let CSS handle positioning)
+        // Initially hide the Yumi text
         gsap.set(yumiText, {
           opacity: 0,
         });
-
-        // Fade in the container first
-        masterTimeline.to(
-          yumiText,
-          {
-            opacity: 1,
-            duration: 0.5,
-            ease: "power2.out",
-          },
-          "+=0.5", // Start after Welcome animation completes
-        );
 
         // Water-ink effect using GSAP's text plugin
         const yumiTextContent = "Yumi";
         const yumiChars = yumiTextContent.split("");
 
         // Create spans for each character inside the nested p tag
-        const yumiPElement = yumiText.querySelector("div p");
+        const yumiPElement = yumiText.querySelector("p");
         if (yumiPElement) {
           yumiPElement.innerHTML = yumiChars
             .map(
               (char) =>
-                `<span class="inline-block opacity-0" style="filter: blur(10px);">${char}</span>`,
+                `<span class="inline-block opacity-0" style="filter: blur(15px); transform: scale(1.2);">${char}</span>`,
             )
             .join("");
 
           const yumiCharElements = yumiPElement.querySelectorAll("span");
 
-          // Water-ink fade-in animation from center outwards
+          // Enhanced water-ink fade-in animation from center outwards
           masterTimeline.to(
             yumiCharElements,
             {
               opacity: 1,
               filter: "blur(0px)",
-              duration: 0.8,
+              transform: "scale(1)",
+              duration: 1, // Total 1 second for the whole animation
               stagger: {
-                each: 0.15,
+                each: 0.1, // Faster stagger for smoother center-to-edge effect
                 from: "center", // Start from center and expand outwards
-                ease: "power2.out",
+                ease: "power3.out",
               },
-              ease: "power2.out",
+              ease: "power3.out",
             },
-            "+=0.3", // Small delay after container appears
+            simultaneousStart, // Same timing as illustration
           );
         }
+
+        // Fade in the container simultaneously
+        masterTimeline.to(
+          yumiText,
+          {
+            opacity: 1,
+            duration: 0.2, // Quick container fade-in
+            ease: "power2.out",
+          },
+          simultaneousStart, // Same timing
+        );
       }
 
-      // Phase 6: Yumi illustration fade-in animation (1 second fade-in)
-      const yumiIllustration = yumiIllustrationRef?.current;
+      // Yumi illustration fade-in animation (simultaneous with text)
       if (yumiIllustration) {
         // Set initial state
         gsap.set(yumiIllustration, {
           opacity: 0,
+          transform: "scale(0.95)", // Slightly smaller initial scale
+          filter: "blur(3px)", // Initial blur for water-ink effect
         });
 
-        // Simple 1 second fade-in animation
+        // Water-ink style fade-in animation
         masterTimeline.to(
           yumiIllustration,
           {
             opacity: 1,
-            duration: 1,
-            ease: "power2.out",
+            transform: "scale(1)",
+            filter: "blur(0px)",
+            duration: 1, // Same 1 second duration as text
+            ease: "power3.out", // Same easing as text for consistency
           },
-          "+=0.5", // Start after Yumi signature animation
+          simultaneousStart, // Exact same timing as text animation
         );
       }
 

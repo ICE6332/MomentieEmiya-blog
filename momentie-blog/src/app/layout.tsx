@@ -53,7 +53,42 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${waterfallFont.variable} ${ibmPlexMono.variable} ${alexBrushFont.variable}`}
     >
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        {children}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              // 禁用右键菜单
+              document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+              });
+              
+              // 禁用选择文本
+              document.addEventListener('selectstart', function(e) {
+                e.preventDefault();
+                return false;
+              });
+              
+              // 禁用拖拽
+              document.addEventListener('dragstart', function(e) {
+                e.preventDefault();
+                return false;
+              });
+              
+              // 禁用键盘快捷键
+              document.addEventListener('keydown', function(e) {
+                // 禁用 F12, Ctrl+U, Ctrl+S, Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+                if (e.key === 'F12' || 
+                    (e.ctrlKey && ['u', 's', 'a', 'c', 'v', 'x'].includes(e.key.toLowerCase()))) {
+                  e.preventDefault();
+                  return false;
+                }
+              });
+            `,
+          }}
+        />
+      </body>
     </html>
   );
 }

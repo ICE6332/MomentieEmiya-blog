@@ -1,7 +1,6 @@
 "use client";
 import { useRef } from "react";
 import { MomentieLogo } from "@/components/MomentieLogo";
-import { WelcomeMessage } from "@/components/WelcomeMessage";
 import { YumiIllustration } from "@/components/YumiIllustration";
 import { YumiSignature } from "@/components/YumiSignature";
 import { useIntroAnimation } from "@/hooks/useIntroAnimation";
@@ -9,7 +8,6 @@ import { useIntroAnimation } from "@/hooks/useIntroAnimation";
 export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
-  const welcomeRef = useRef<HTMLDivElement>(null);
   const yumiRef = useRef<HTMLDivElement>(null);
   const yumiIllustrationRef = useRef<HTMLDivElement>(null);
 
@@ -17,49 +15,42 @@ export default function Home() {
   useIntroAnimation({
     containerRef,
     svgRef,
-    welcomeRef,
     yumiRef,
     yumiIllustrationRef,
   });
 
   return (
-    <main className="bg-[--color-momentie-bg] min-h-screen relative">
-      <div ref={containerRef} className="relative w-full min-h-screen">
-        {/* Top container for final layout (Frame 2 - 37:340) */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1440px] p-[10px]">
-          {/* Placeholder for MomentieEmiya (will move here) */}
-          <div className="h-[140px] flex items-center justify-center">
+    <main className="bg-[#f0eee6] size-full min-h-screen relative">
+      <div ref={containerRef} className="relative size-full min-h-screen">
+        {/* Frame 2 - Top section (37:340) */}
+        <div className="absolute box-border content-stretch flex flex-col h-[297px] items-start justify-start left-1/2 pb-[60px] pt-[30px] px-5 top-0 translate-x-[-50%] w-[1400px]">
+          <div className="basis-0 box-border content-stretch flex flex-col gap-2.5 grow items-center justify-center mb-[-30px] min-h-px min-w-px overflow-clip relative shrink-0 w-[1351px]">
             {/* MomentieEmiya will animate to this position */}
-          </div>
-          {/* Welcome message container */}
-          <div className="h-[140px]  flex items-center justify-center">
-            <WelcomeMessage ref={welcomeRef} className="opacity-0 w-full" />
           </div>
         </div>
 
-        {/* MomentieEmiya - starts at center (Frame 1 - 37:34), moves to top */}
+        {/* MomentieEmiya - starts at center, moves to Frame 2 */}
         <MomentieLogo
           ref={svgRef}
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[82px]"
         />
 
-        {/* Bottom section with Yumi text and illustration */}
-        {/* Yumi illustration layer (37:191) - behind */}
-        <YumiIllustration
-          ref={yumiIllustrationRef}
-          className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[440px] h-[734px] opacity-0 z-10"
-        />
+        {/* Frame 3 - Bottom section (37:322) */}
+        <div className="absolute bottom-0 h-[727px] left-1/2 translate-x-[-50%] w-[1400px]">
+          {/* Yumi illustration layer - behind */}
+          <YumiIllustration
+            ref={yumiIllustrationRef}
+            className="absolute bg-center bg-cover bg-no-repeat h-[728px] left-[480px] opacity-0 rounded-[30px] top-[7px] w-[437px] z-10"
+          />
 
-        {/* Yumi text layer (Frame 3 - 37:322) - in front */}
-        <div
-          ref={yumiRef}
-          className="absolute bottom-0 left-1/2 -translate-x-1/2 flex items-center justify-center z-20"
-          style={{
-            width: "1349px",
-            height: "432px",
-          }}
-        >
-          <YumiSignature className="" />
+          {/* Yumi text layer - in front */}
+          <div
+            ref={yumiRef}
+            className="absolute bottom-[60px] flex flex-col font-['Alex_Brush:Regular',_sans-serif] h-[120px] justify-center leading-[0] not-italic text-[288px] text-[rgba(68,158,203,0.8)] text-center translate-x-[-50%] translate-y-[50%] w-[900px] z-20"
+            style={{ left: "calc(50% - 20px)" }}
+          >
+            <YumiSignature className="leading-[normal]" />
+          </div>
         </div>
       </div>
     </main>
