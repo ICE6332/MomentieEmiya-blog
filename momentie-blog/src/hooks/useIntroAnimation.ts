@@ -103,15 +103,15 @@ export function useIntroAnimation({
             }
           },
         },
-        "+=0.3", // Small delay after the last fill animation
+        "+=0.15", // Reduced delay for faster transition
       );
 
       // Phase 4: Simultaneous Yumi text and illustration animation (1 second total)
       const yumiText = yumiRef.current;
       const yumiIllustration = yumiIllustrationRef?.current;
       
-      // Start both animations at the same time with same delay
-      const simultaneousStart = "+=0.3"; // Start after Logo animation completes
+      // Calculate the exact position after logo animation
+      const logoEndPosition = masterTimeline.duration(); // Get current timeline duration
 
       // Yumi text water-ink effect
       if (yumiText) {
@@ -151,7 +151,7 @@ export function useIntroAnimation({
               },
               ease: "power3.out",
             },
-            simultaneousStart, // Same timing as illustration
+            logoEndPosition, // Start exactly when logo animation ends
           );
         }
 
@@ -163,7 +163,7 @@ export function useIntroAnimation({
             duration: 0.2, // Quick container fade-in
             ease: "power2.out",
           },
-          simultaneousStart, // Same timing
+          logoEndPosition, // Same timing as character animation
         );
       }
 
@@ -186,7 +186,7 @@ export function useIntroAnimation({
             duration: 1, // Same 1 second duration as text
             ease: "power3.out", // Same easing as text for consistency
           },
-          simultaneousStart, // Exact same timing as text animation
+          logoEndPosition, // Exact same timing as text animation
         );
       }
 

@@ -4,89 +4,94 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Development Commands
 
-- `npm run dev` - Start development server (default: http://localhost:3000)
+- `npm run dev` - Start development server (default: http://localhost:3000, may use alternative ports if 3000 is occupied)
 - `npm run build` - Build production application (includes TypeScript type checking)
 - `npm start` - Start production server
 - `npm run lint` - Run Biome linter checks
+- `npm run lint:fix` - Run Biome linter with auto-fix
 - `npm run format` - Auto-format code with Biome
-- `npx tsc --noEmit` - Run TypeScript type checking manually
+- `npm run typecheck` - Run TypeScript type checking manually
 
 ## Project Architecture
 
+### Core Animation Landing Page
+This is a minimalist blog landing page with sophisticated GSAP animations following a specific design from Figma (node-id: 37:47).
+
+**Layout Structure (Figma-based):**
+- **Frame 2 (Top Section)**: Height 297px - Contains animated MomentieEmiya logo
+- **Frame 3 (Bottom Section)**: Height 727px - Contains Yumi signature and illustration
+
 ### Component Architecture
-The application follows a modular component structure with separation of concerns:
 
 **Main Components** (`src/components/`)
-- `MomentieLogo.tsx` - SVG logo component with `forwardRef<SVGSVGElement>` for animation control
-- `WelcomeMessage.tsx` - Welcome text component with IBM Plex Mono font styling
-- `YumiSignature.tsx` - Artistic signature component using Alex Brush font
-- `YumiIllustration.tsx` - Water-ink style illustration component (新增)
+- `MomentieLogo.tsx` - SVG logo component with `forwardRef<SVGSVGElement>` for GSAP animation control
+- `YumiSignature.tsx` - Signature component with Alex Brush font (loaded directly in component)
+- `YumiIllustration.tsx` - Water-ink style illustration component
 
 **Custom Hooks** (`src/hooks/`)
-- `useIntroAnimation.ts` - Encapsulates all GSAP animation logic with timeline management
-  - Handles client-side hydration with `isClient` state
-  - Manages complex animation sequences: SVG path drawing, text typewriter effects, water-ink transitions
-  - Returns timeline reference for external control
+- `useIntroAnimation.ts` - Master animation controller using GSAP
+  - Client-side hydration safety with `isClient` state
+  - Returns cleanup function via `ctx.revert()`
+  - Process safety checks for console.log statements
 
 **Page Structure** (`src/app/`)
-- `page.tsx` - Main home page that composes components and uses animation hook
-- `layout.tsx` - Root layout with font configurations (Geist, IBM Plex Mono, Waterfall, Alex Brush)
-- `globals.css` - Global styles with CSS variables for theming
+- `page.tsx` - Main landing page composing all components
+- `layout.tsx` - Root layout with font configurations and interaction disabling scripts
+- `globals.css` - Tailwind v4 with custom theme variables
 
-### Animation System
-The application uses GSAP for complex animation sequences with precise timeline control:
+### Animation Timeline
 
-**Animation Phases:**
-1. **Logo Drawing** (0-2s): SVG path stroke animation for letter outlines
-2. **Logo Filling** (2-3s): Path fill transition to solid colors
-3. **Logo Transform** (3-4s): Scale down and reposition to top-left corner
-4. **Welcome Text** (4-6s): Typewriter effect for welcome message with cursor blink
-5. **Signature Fade** (6-7s): Water-ink fade effect for Yumi signature
-6. **Illustration** (7-8s): Final illustration fade-in (if present)
+Synchronized animation sequence managed by `useIntroAnimation`:
 
-All animations are managed through a master GSAP timeline in `useIntroAnimation` hook with:
-- Staggered delays for natural flow
-- Easing functions for smooth transitions
-- Auto-cleanup on component unmount
+1. **Logo Drawing** (0-2.1s): SVG path stroke animation with staggered letter drawing
+2. **Logo Filling** (2.1-3s): Path fill transition to solid colors
+3. **Logo Movement** (3-4.2s): Reposition to top=120px (manually adjusted for visual balance)
+4. **Yumi + Illustration** (4.5-5.5s): Simultaneous 1-second water-ink effect
+   - Text: blur(15px) → blur(0), scale(1.2) → scale(1), center-outward reveal
+   - Illustration: blur(3px) → blur(0), scale(0.95) → scale(1)
 
-### Styling Configuration
-- **Tailwind CSS v4** with PostCSS
-- **Custom Properties**: `--color-momentie-bg: #f0eee6`, `--color-momentie-text: #000000`
-- **Font System**:
-  - Google Fonts: Geist Sans/Mono, IBM Plex Mono
-  - Local Fonts: Waterfall-Regular.ttf, AlexBrush-Regular.ttf
-- **CSS Variables**: Used for dynamic theming and font references
+### Font System
 
-### Code Quality
-- **Biome** for linting and formatting (NOT ESLint/Prettier)
-- **TypeScript** with strict mode and path aliases (`@/*` → `./src/*`)
-- **Import Organization**: Automatically sorted with type imports first
-- **Indentation**: 2 spaces enforced
+**Google Fonts (via next/font/google):**
+- Geist Sans/Mono - System fonts
+- IBM Plex Mono - Monospace text
 
-## Key Technical Patterns
+**Local Fonts (via next/font/local):**
+- `Waterfall-Regular.ttf` - MomentieEmiya logo text
+- `AlexBrush-Regular.ttf` - Yumi signature (loaded in component to ensure proper rendering)
 
-### ForwardRef Pattern
-All visual components use `forwardRef` to expose DOM refs for animation control:
-```typescript
-export const ComponentName = forwardRef<HTMLDivElement, Props>(
-  ({ className }, ref) => { /* ... */ }
-);
-ComponentName.displayName = "ComponentName";
-```
+Font files located in `src/app/fonts/`
 
-### Client-Side Animation Safety
-Animations check for client-side rendering before execution:
-```typescript
-const [isClient, setIsClient] = useState(false);
-useEffect(() => { setIsClient(true); }, []);
-useGSAP(() => {
-  if (!isClient) return;
-  // animation logic
-}, { dependencies: [isClient] });
-```
+### Interaction Blocking
 
-### GSAP Timeline Management
-Single master timeline coordinates all animation phases with precise timing:
-- Staggered letter animations with calculated delays
-- Phase transitions using timeline position parameters
-- Cleanup handled automatically by useGSAP hook
+The layout includes client-side scripts that disable:
+- Right-click context menu
+- Text selection
+- Drag operations
+- Keyboard shortcuts (F12, Ctrl+U/S/A/C/V/X)
+
+CSS also enforces `pointer-events: none` and `-webkit-user-select: none` globally.
+
+### Code Quality Configuration
+
+**Biome Configuration:**
+- Formatter: 2 spaces indentation
+- Linter: Recommended rules + Next.js/React specific rules
+- Auto import organization enabled
+- Ignores: node_modules, .next, dist, build
+
+**TypeScript:**
+- Strict mode enabled
+- Path alias: `@/*` → `./src/*`
+- Target: ES2017
+- Module: ESNext with bundler resolution
+
+### Critical Implementation Details
+
+1. **Font Loading Issue**: Alex Brush font must be loaded directly in `YumiSignature` component using `localFont()` - loading via layout.tsx CSS variables has proven unreliable
+
+2. **Animation Refs**: All animated components use `forwardRef` pattern for GSAP control
+
+3. **Hydration Safety**: Animation hook includes `isClient` check to prevent SSR/hydration mismatches
+
+4. **Position Fine-tuning**: Logo final position (top: 120px) was manually adjusted from calculated value for optimal visual balance

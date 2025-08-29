@@ -1,28 +1,26 @@
 import { forwardRef } from "react";
+import localFont from "next/font/local";
+
+// 直接在组件中加载Alex Brush字体
+const alexBrush = localFont({
+  src: "../app/fonts/AlexBrush-Regular.ttf",
+  weight: "400",
+  style: "normal",
+});
 
 interface YumiSignatureProps {
   className?: string;
 }
 
-export const YumiSignature = forwardRef<HTMLDivElement, YumiSignatureProps>(
+export const YumiSignature = forwardRef<HTMLParagraphElement, YumiSignatureProps>(
   ({ className }, ref) => {
     return (
-      <div
-        ref={ref}
-        className={`flex items-center justify-center w-full h-full ${className || ""}`}
+      <p 
+        ref={ref} 
+        className={`${alexBrush.className} ${className || ""}`}
       >
-        <div
-          style={{
-            fontFamily: "var(--font-alex-brush)",
-            fontSize: "288px",
-            color: "rgba(68,158,203,0.8)",
-            fontStyle: "normal",
-            textAlign: "center",
-          }}
-        >
-          Yumi
-        </div>
-      </div>
+        Yumi
+      </p>
     );
   },
 );

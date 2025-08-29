@@ -46,8 +46,10 @@ export default function Home() {
           {/* Yumi text layer - in front */}
           <div
             ref={yumiRef}
-            className="absolute bottom-[60px] flex flex-col font-['Alex_Brush:Regular',_sans-serif] h-[120px] justify-center leading-[0] not-italic text-[288px] text-[rgba(68,158,203,0.8)] text-center translate-x-[-50%] translate-y-[50%] w-[900px] z-20"
-            style={{ left: "calc(50% - 20px)" }}
+            className="absolute bottom-[60px] flex flex-col h-[120px] justify-center leading-[0] not-italic text-[288px] text-[rgba(68,158,203,0.8)] text-center translate-x-[-50%] translate-y-[50%] w-[900px] z-20"
+            style={{ 
+              left: "calc(50% - 20px)"
+            }}
           >
             <YumiSignature className="leading-[normal]" />
           </div>
