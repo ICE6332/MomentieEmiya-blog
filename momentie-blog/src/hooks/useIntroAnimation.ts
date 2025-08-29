@@ -25,7 +25,7 @@ export function useIntroAnimation({
   }, []);
 
   useGSAP(
-    () => {
+    (ctx) => {
       // Only run animations on client side after hydration
       if (!isClient) return;
 
@@ -48,8 +48,8 @@ export function useIntroAnimation({
       );
 
       // Initialize all paths to invisible state
-      const paths = svg.querySelectorAll("path");
-      paths.forEach((path: SVGPathElement) => {
+      const paths = svg.querySelectorAll<SVGPathElement>("path");
+      paths.forEach((path) => {
         const pathLength = path.getTotalLength();
         gsap.set(path, {
           strokeDasharray: pathLength,
@@ -61,7 +61,7 @@ export function useIntroAnimation({
       // Create and start the complete animation sequence
       const masterTimeline = gsap.timeline({ delay: 1 });
 
-      paths.forEach((path: SVGPathElement, index: number) => {
+      paths.forEach((path, index) => {
         // Phase 1: Stroke animation (drawing the letter outline)
         masterTimeline.to(
           path,
@@ -98,7 +98,9 @@ export function useIntroAnimation({
           y: 0, // Reset y transform
           ease: "power4.out", // Fast start, elegant slow stop
           onComplete: () => {
-            console.log("Animation complete - SVG positioned at top");
+            if (process.env.NODE_ENV === "development") {
+              console.log("Animation complete - SVG positioned at top");
+            }
           },
         },
         "+=0.3", // Small delay after the last fill animation
@@ -189,6 +191,10 @@ export function useIntroAnimation({
       }
 
       timelineRef.current = masterTimeline;
+      return () => {
+        ctx.revert();
+        timelineRef.current = null;
+      };
     },
     { scope: containerRef, dependencies: [isClient] },
   );
